@@ -1,20 +1,37 @@
 def count_dups(word)
-  word.chars.reduce({}) { |d, l| d[l] = word.chars.count(l); d }
+  word.reduce({}) { |d, l| d[l] = word.count(l); d }
+end
+
+def dups_factorial(perm)
+  count_dups(perm).values.reduce(1) { |d, p| d *= factorial(p) }
 end
 
 def rank(word)
-  repeats = count_dups(word)
-  puts "#{repeats}"
-  #word = word.chars.sort.join
+  sorted = word.chars.sort.join
+  perm_left = sorted.chars
+  perm = []
   counts = []
+  r = 1
   n = word.size
-  (0..word.size-1).each do |i|
-    count = word.chars[i+1,n-1].count { |l| l < word[i] }
-    puts "#{count} #{n - i - 1} #{repeats[word[i+1]]}"
-    r = count * factorial(n - i - 1)
-    counts << r / factorial(repeats[word[i]])
+  (0..n-1).each do |si|
+    pi = 0
+    loop do
+      if perm_left[pi] == word[si]
+        #perm << perm_left[pi]
+        perm_left.delete_at(pi)
+        #puts "#{pi} #{perm_left[pi]} #{word[si]}"
+        break
+      else
+        count = perm_left.size - 1
+        r += factorial(count) / dups_factorial(perm_left)
+        #counts << r
+        #puts "\n#{perm.join} #{perm_left.join} #{count}! / #{dups_factorial(perm_left)} = #{r}"
+      end
+      pi += 1
+    end
   end
-  counts
+  #counts
+  r
 end
 
 def factorial(n)
